@@ -1,7 +1,7 @@
 <template>
   <el-row  type="flex" class="row-bg" justify="center" >
     <el-col  :lg="8" :xl="8" style="margin-top: 120px">
-      <el-form label-width="80px" :model="loginForm" :rules="rules">
+      <el-form label-width="80px" :model="loginForm" :rules="rules" ref="loginForm">
         <el-form-item label="用户名" prop="username" style="width: 380px;">
           <el-input v-model="loginForm.username"></el-input>
         </el-form-item>
@@ -9,8 +9,10 @@
           <el-input v-model="loginForm.password" type="password"></el-input>
         </el-form-item>
         <el-form-item label="验证码" prop="code"  style="width: 380px;">
-          <el-input v-model="loginForm.code"  style="width: 172px; float: left" maxlength="5"></el-input>
-          <el-image :src="captchaImg" class="captchaImg" @click="getCaptcha"></el-image>
+          <el-input v-model="loginForm.code"  style="width: 172px; float: left" maxlength="4"></el-input>
+
+          <!-- 用el-image会出现验证码无法显示的bug-->
+          <img :src="captchaImg" class="captchaImg" @click="getCaptcha" alt="加载失败"/>
         </el-form-item>
 
         <el-form-item>
@@ -18,7 +20,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="text">没有账号？去注册</el-button>
+          <el-button type="text" @click="signUp">没有账号？去注册</el-button>
         </el-form-item>
 
       </el-form>
@@ -27,14 +29,18 @@
 </template>
 
 <script>
+
+import qs from "qs";
+import Element from "element-ui"
+
 export default {
   name: "Login",
   data() {
     return {
       loginForm: {
-        username: 'admin',
-        password: '111111',
-        code: '11111',
+        username: '',
+        password: '',
+        code: '',
         key: ''
       },
       rules: {
@@ -46,7 +52,7 @@ export default {
         ],
         code: [
           { required: true, message: '请输入验证码', trigger: 'blur' },
-          { min: 5, max: 5, message: '长度为 5 个字符', trigger: 'blur' }
+          { min: 4, max: 4, message: '长度为 4 个字符', trigger: 'blur' }
         ],
       },
       captchaImg: null
@@ -56,14 +62,23 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$axios.post('/login?'+ qs.stringify(this.loginForm)).then(res => {
+          this.$axios.post('/login',qs.stringify(this.loginForm),{headers:{'Content-Type': 'application/x-www-form-urlencoded'}}).then(res => {
 
             console.log(res)
 
-            const jwt = res.headers['authorization']
 
-            this.$store.commit('SET_TOKEN', jwt)
-            this.$router.push("/index")
+            //登录成功后将jwt保存到vuex，并跳转到首页
+            const jwt = res.headers['authentication']
+            if (jwt){
+              this.$store.commit('SET_TOKEN', jwt)
+              Element.Message.success(!res.data.message ? '操作成功' : res.data.message)
+              this.$router.push("/index")
+            }
+            else{
+              Element.Message.error(!res.data.message ? '系统异常' : res.data.message)
+              this.getCaptcha()
+            }
+
           })
 
         } else {
@@ -72,14 +87,19 @@ export default {
         }
       });
     },
+    signUp() {
+      this.$router.push("/register")
+    },
     getCaptcha() {
-      this.$axios.get('/captcha').then(res => {
+      this.$axios.get('/admin/captcha/get').then(res => {
 
-        console.log("/captcha")
         console.log(res)
 
-        this.loginForm.token = res.data.data.token
+        //获取验证码的key和图片
+        this.loginForm.key = res.data.data.key
         this.captchaImg = res.data.data.captchaImg
+
+        //清空验证码输入框
         this.loginForm.code = ''
       })
     }
