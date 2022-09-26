@@ -44,46 +44,7 @@ export default {
   computed:  {
     menuList: {
       get(){
-        return [
-          {
-            name: 'SysManage',
-            title: '系统管理',
-            icon: 'el-icon-s-operation',
-            path: '',
-            children:[
-              {
-                name: 'UserManage',
-                title: '用户管理',
-                icon: 'el-icon-s-custom',
-                path: '/sys/users',
-                children: []
-              },
-              {
-                name: 'RoleManage',
-                title: '角色管理',
-                icon: 'el-icon-s-check',
-                path: '/sys/roles',
-                children: []
-              }
-            ]
-          },
-          {
-            name: 'SysTools',
-            title: '系统工具',
-            icon: 'el-icon-setting',
-            path: '',
-            children:[
-              {
-                name: 'DataQuery',
-                title: '数据字典',
-                icon: 'el-icon-tickets',
-                path: '/sys/data',
-                children: []
-              },
-
-            ]
-          },
-        ]
+        return this.$store.state.menuList
       }
     }
 

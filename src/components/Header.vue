@@ -33,14 +33,25 @@ export default {
   },
   methods:{
     getUserInfo() {
+      this.$axios.get('/getUserInfo').then(res => {
+        this.userInfo = res.data.userInfo
+      })
 
     },
     logout() {
+      this.$axios.post("/logout").then(res => {
+        localStorage.clear()
+        sessionStorage.clear()
 
+        this.$store.commit("resetState")
+
+        //resetState TODO
+
+        this.$router.push("/login")
+      })
     }
   },
   created() {
-    console.log("zzzzzzzzzzzzz")
     this.getUserInfo()
   }
 }
