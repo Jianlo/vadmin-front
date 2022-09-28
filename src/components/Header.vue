@@ -45,8 +45,6 @@ export default {
 
         this.$store.commit("resetState")
 
-        //resetState TODO
-
         this.$router.push("/login")
       })
     }

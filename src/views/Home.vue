@@ -6,18 +6,23 @@
       <Header></Header>
     </el-header>
 
-    <!-- aside-->
-    <el-aside width="200px">
-      <SideMenu></SideMenu>
-    </el-aside>
-
     <!-- main-->
-    <el-main>
-      <MenuTabs></MenuTabs>
-      <div style="margin: 0 15px;">
-        <router-view/>
-      </div>
-    </el-main>
+    <el-container>
+
+      <!-- aside-->
+      <el-aside width="200px">
+        <SideMenu></SideMenu>
+      </el-aside>
+
+      <el-main>
+        <MenuTabs></MenuTabs>
+        <div style="margin: 0 15px;">
+          <router-view/>
+        </div>
+      </el-main>
+
+    </el-container>
+
   </el-container>
 </template>
 
@@ -44,24 +49,6 @@ export default {
     }
   },
   methods: {
-    getUserInfo() {
-      this.$axios.get("/sys/userInfo").then(res => {
-        this.userInfo = res.data.data
-      })
-    },
-    logout() {
-      this.$axios.post("/logout").then(res => {
-        localStorage.clear()
-        sessionStorage.clear()
-
-        this.$store.commit("resetState")
-
-        this.$router.push("/login")
-      })
-    }
-  },
-  created() {
-    this.getUserInfo()
   }
 
 }
