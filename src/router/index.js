@@ -16,6 +16,21 @@ const routes = [
         path: '/index',
         name: 'Index',
         component: () => import('../views/Index.vue')
+      },
+      {
+        path: '/sys/menus',
+        name: 'MenusManage',
+        component: () => import('../views/sys/Menus.vue')
+      },
+      {
+        path: '/sys/users',
+        name: 'UserManage',
+        component: () => import('../views/sys/Users.vue')
+      },
+      {
+        path: '/sys/roles',
+        name: 'RoleManage',
+        component: () => import('../views/sys/Roles.vue')
       }
     ]
   },

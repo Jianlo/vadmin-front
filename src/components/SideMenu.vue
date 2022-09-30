@@ -64,6 +64,13 @@ export default {
                 icon: 'el-icon-s-check',
                 path: '/sys/roles',
                 children: []
+              },
+              {
+                name: 'MenusManage',
+                title: '菜单管理',
+                icon: 'el-icon-menu',
+                path: '/sys/menus',
+                children: []
               }
             ]
           },
@@ -91,6 +98,7 @@ export default {
   methods: {
     selectMenu(item) {
       this.$store.commit("addTab", item)
+      this.$router.push(item.path)
     }
   }
 
