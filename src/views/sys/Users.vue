@@ -20,9 +20,7 @@
       </el-form-item>
 
       <el-form-item>
-        <el-popconfirm title="确定批量删除吗？" @confirm="delHandle(null)">
-          <el-button type="danger" slot="reference" :disabled="delBtnStatus">批量删除</el-button>
-        </el-popconfirm>
+        <el-button type="danger" :disabled="delBtnStatus" @click="delHandle(null)">批量删除</el-button>
       </el-form-item>
 
     </el-form>
@@ -75,7 +73,7 @@
         <template slot-scope="scope">
           <el-switch @change="statusChange"
               style="display: block"
-              v-model="status"
+              v-model="scope.row.status"
               active-color="#13ce66"
               inactive-color="#ff4949"
               active-text="启用"
@@ -99,11 +97,8 @@
 <!--          <el-button type="text" @click="editHandle(scope.row.id)">编辑</el-button>-->
 <!--          <el-divider direction="vertical"></el-divider>-->
 
-          <template>
-            <el-popconfirm title="确定删除该用户吗？" @confirm="delHandle(scope.row.id)">
-              <el-button type="text" slot="reference">删除</el-button>
-            </el-popconfirm>
-          </template>
+          <el-button type="text" @click="delHandle(scope.row.id)">删除</el-button>
+
 
         </template>
       </el-table-column>
@@ -192,11 +187,19 @@ export default {
       },
       delBtnStatus: true,
       tableData:[{
+        id:3,
         avatar: '',
         username: 'passer-by',
         roles: [{name:'管理员'},{name: '年度大会员'}],
         email: '2934316811@qq.com',
-        status:1
+        status:true
+      },{
+        id:5,
+        avatar: '',
+        username: 'hhh',
+        roles: [{name:'管理员'}],
+        email: '2967611@qq.com',
+        status:true
       }],
       multipleSelection: [],
       total: 0,
@@ -225,7 +228,28 @@ export default {
         label: 'name'
       },
       roleForm: {},
-      roleTreeData:  [],
+      roleTreeData:  [
+        {
+          "id": 3,
+          "created": "2021-01-04T10:09:14",
+          "updated": "2021-01-30T08:19:52",
+          "statu": 1,
+          "name": "普通用户",
+          "code": "normal",
+          "remark": "只有基本查看功能",
+          "menuIds": []
+        },
+        {
+          "id": 6,
+          "created": "2021-01-16T13:29:03",
+          "updated": "2021-01-17T15:50:45",
+          "statu": 1,
+          "name": "超级管理员",
+          "code": "admin",
+          "remark": "系统默认最高权限，不可以编辑和任意修改",
+          "menuIds": []
+        }
+      ],
       treeCheckedKeys: [],
       checkStrictly: true
     }
@@ -290,16 +314,23 @@ export default {
 
       console.log(ids)
 
-      this.$axios.post("/sys/user/delete", ids).then(res => {
-        this.$message({
-          showClose: true,
-          message: '恭喜你，操作成功',
-          type: 'success',
-          onClose:() => {
-            this.getUserList()
-          }
-        });
+      this.$confirm('确定删除所选用户吗, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$axios.post("/sys/user/delete", ids).then(res => {
+          this.$message({
+            showClose: true,
+            message: '恭喜你，操作成功',
+            type: 'success',
+            onClose: () => {
+              this.getUserList()
+            }
+          });
+        })
       })
+
     },
 
     // editHandle(id) {
@@ -342,8 +373,15 @@ export default {
     },
 
     roleHandle (id) {
+
+      //获取角色列表
+      this.$axios.get("/sys/role/list").then(res => {
+        this.roleTreeData = res.data.data.records
+      })
+
       this.roleDialogFormVisible = true
 
+      //获取该用户拥有的角色
       this.$axios.get('/sys/user/info/' + id).then(res => {
         this.roleForm = res.data.data
 
