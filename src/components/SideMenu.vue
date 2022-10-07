@@ -7,7 +7,7 @@
       text-color="#fff"
       active-text-color="#ffd04b">
 
-    <el-menu-item index="Index"  @click="selectMenu({name: 'Index', title: '首页'})">
+    <el-menu-item index="Index"  @click="selectMenu({name: 'Index', title: '首页',path: '/index'})">
       <template slot="title">
         <i class="el-icon-s-home"></i>
         <span slot="title">首页</span>

@@ -152,7 +152,7 @@
       </div>
     </el-dialog>
 
-    <!-- 分配权限对话框 -->
+    <!-- 分配角色对话框 -->
     <el-dialog title="分配角色" :visible.sync="roleDialogFormVisible" width="600px">
 
       <el-form :model="roleForm">
@@ -207,9 +207,7 @@ export default {
       current: 1,
       dialogVisible:false,
       editForm:{
-        username: 'passer-by',
-        email:'2934316811@qq.com',
-        status:1
+
       },
       editFormRules: {
         username: [
@@ -266,7 +264,7 @@ export default {
     },
     statusChange(val){
       console.log(val)
-      // todo:修改用户status
+      // todo:后端修改用户status
     },
     handleSelectionChange(val) {
       this.multipleSelection = val;
@@ -434,9 +432,9 @@ export default {
     created() {
       this.getUserList()
 
-      this.$axios.get("/sys/role/list").then(res => {
-        this.roleTreeData = res.data.data.records
-      })
+      // this.$axios.get("/sys/role/list").then(res => {
+      //   this.roleTreeData = res.data.data.records
+      // })
     },
 
 
